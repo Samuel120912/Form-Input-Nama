@@ -1,19 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Form Input Data</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      background-color: #f9f9f9;
+    }
+
+    h2, h3 {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input[type="text"], input[type="date"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #fff;
+      margin-top: 10px;
+      padding: 10px;
+      border-left: 5px solid #007BFF;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
   <h2>Form Input</h2>
 
-  <label>Nama:</label><br>
-  <input type="text" id="nameInput" placeholder="Nama lengkap"><br><br>
+  <label for="nameInput">Nama:</label>
+  <input type="text" id="nameInput" placeholder="Nama lengkap">
 
-  <label>Tempat Lahir:</label><br>
-  <input type="text" id="tempatInput" placeholder="Tempat lahir"><br><br>
+  <label for="tempatInput">Tempat Lahir:</label>
+  <input type="text" id="tempatInput" placeholder="Tempat lahir">
 
-  <label>Tanggal Lahir:</label><br>
-  <input type="date" id="tanggalInput"><br><br>
+  <label for="tanggalInput">Tanggal Lahir:</label>
+  <input type="date" id="tanggalInput">
 
   <button onclick="simpanData()">Kirim</button>
 
