@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Form Input Nama</title>
+</head>
+<body>
+  <h2>Masukkan Nama:</h2>
+  <input type="text" id="nameInput" placeholder="Tulis namamu">
+  <button onclick="simpanNama()">Kirim</button>
+
+  <h3>Nama yang sudah disimpan:</h3>
+  <ul id="daftarNama"></ul>
+
+  <script>
+    function simpanNama() {
+      const nama = document.getElementById("nameInput").value;
+      if (!nama) return;
+
+      let daftar = JSON.parse(localStorage.getItem("daftarNama") || "[]");
+      daftar.push(nama);
+      localStorage.setItem("daftarNama", JSON.stringify(daftar));
+      tampilkanDaftar();
+      document.getElementById("nameInput").value = "";
+    }
+
+    function tampilkanDaftar() {
+      let daftar = JSON.parse(localStorage.getItem("daftarNama") || "[]");
+      const ul = document.getElementById("daftarNama");
+      ul.innerHTML = "";
+      daftar.forEach(nama => {
+        const li = document.createElement("li");
+        li.textContent = nama;
+        ul.appendChild(li);
+      });
+    }
+
+    tampilkanDaftar();
+  </script>
+</body>
+</html>
