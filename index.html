@@ -1,40 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Form Input Nama</title>
+  <title>Form Input Data</title>
 </head>
 <body>
-  <h2>Masukkan Nama:</h2>
-  <input type="text" id="nameInput" placeholder="Tulis namamu">
-  <button onclick="simpanNama()">Kirim</button>
+  <h2>Form Input</h2>
 
-  <h3>Nama yang sudah disimpan:</h3>
-  <ul id="daftarNama"></ul>
+  <label>Nama:</label><br>
+  <input type="text" id="nameInput" placeholder="Nama lengkap"><br><br>
+
+  <label>Tempat Lahir:</label><br>
+  <input type="text" id="tempatInput" placeholder="Tempat lahir"><br><br>
+
+  <label>Tanggal Lahir:</label><br>
+  <input type="date" id="tanggalInput"><br><br>
+
+  <button onclick="simpanData()">Kirim</button>
+
+  <h3>Data yang disimpan:</h3>
+  <ul id="daftarData"></ul>
 
   <script>
-    function simpanNama() {
+    function simpanData() {
       const nama = document.getElementById("nameInput").value;
-      if (!nama) return;
+      const tempat = document.getElementById("tempatInput").value;
+      const tanggal = document.getElementById("tanggalInput").value;
 
-      let daftar = JSON.parse(localStorage.getItem("daftarNama") || "[]");
-      daftar.push(nama);
-      localStorage.setItem("daftarNama", JSON.stringify(daftar));
-      tampilkanDaftar();
+      if (!nama || !tempat || !tanggal) {
+        alert("Semua kolom harus diisi!");
+        return;
+      }
+
+      let dataList = JSON.parse(localStorage.getItem("dataList") || "[]");
+      dataList.push({ nama, tempat, tanggal });
+      localStorage.setItem("dataList", JSON.stringify(dataList));
+      tampilkanData();
+
       document.getElementById("nameInput").value = "";
+      document.getElementById("tempatInput").value = "";
+      document.getElementById("tanggalInput").value = "";
     }
 
-    function tampilkanDaftar() {
-      let daftar = JSON.parse(localStorage.getItem("daftarNama") || "[]");
-      const ul = document.getElementById("daftarNama");
+    function tampilkanData() {
+      const dataList = JSON.parse(localStorage.getItem("dataList") || "[]");
+      const ul = document.getElementById("daftarData");
       ul.innerHTML = "";
-      daftar.forEach(nama => {
+      dataList.forEach(item => {
         const li = document.createElement("li");
-        li.textContent = nama;
+        li.textContent = `${item.nama} - ${item.tempat}, ${item.tanggal}`;
         ul.appendChild(li);
       });
     }
 
-    tampilkanDaftar();
+    tampilkanData();
   </script>
 </body>
 </html>
