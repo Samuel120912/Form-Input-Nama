@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Form Input ke Spreadsheet</title>
+  <title>Form Input ke Spreadsheet & Excel</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -34,10 +35,10 @@
     }
 
     button {
-      margin-top: 20px;
+      margin-top: 15px;
       width: 100%;
       padding: 12px;
-      background-color: #28a745;
+      background-color: #007bff;
       color: white;
       border: none;
       font-size: 16px;
@@ -46,7 +47,7 @@
     }
 
     button:hover {
-      background-color: #218838;
+      background-color: #0056b3;
     }
 
     .success-message {
@@ -74,42 +75,75 @@
   <label for="tanggalInput">Tanggal Lahir:</label>
   <input type="date" id="tanggalInput" required>
 
-  <button onclick="simpanData()">Kirim</button>
+  <button onclick="simpanKeSpreadsheet()">Kirim ke Spreadsheet</button>
+  <button onclick="exportKeExcel()">Export ke Excel</button>
 
   <div id="pesan"></div>
 
   <script>
-    function simpanData() {
-      const nama = document.getElementById("nameInput").value.trim();
-      const tempat = document.getElementById("tempatInput").value.trim();
-      const tanggal = document.getElementById("tanggalInput").value;
+    function getFormData() {
+      return {
+        nama: document.getElementById("nameInput").value.trim(),
+        tempat: document.getElementById("tempatInput").value.trim(),
+        tanggal: document.getElementById("tanggalInput").value
+      };
+    }
+
+    function simpanKeSpreadsheet() {
+      const data = getFormData();
       const pesanEl = document.getElementById("pesan");
 
-      if (!nama || !tempat || !tanggal) {
+      if (!data.nama || !data.tempat || !data.tanggal) {
         pesanEl.innerHTML = '<div class="error-message">Semua kolom harus diisi.</div>';
         return;
       }
 
-      const data = new URLSearchParams();
-      data.append("nama", nama);
-      data.append("tempat", tempat);
-      data.append("tanggal", tanggal);
+      const params = new URLSearchParams();
+      params.append("nama", data.nama);
+      params.append("tempat", data.tempat);
+      params.append("tanggal", data.tanggal);
 
-      fetch("https://script.google.com/macros/s/AKfycbyFFdS3vNdhxni1e_Q2vCHWDcOAvJuJfLf2-M-0FuZZk9klSwhlo8-rj3PLOC5Yl_j1OQ/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbzlEqUKB9akRB3Cq9Ft3KLKeczpW04Vv-7N6ot7KtAt6wjZO43nKS3LTP_tpV3e_RBrOw/exec", {
         method: "POST",
-        body: data
+        body: params
       })
       .then(res => res.text())
       .then(response => {
         pesanEl.innerHTML = '<div class="success-message">Data berhasil dikirim ke Spreadsheet!</div>';
-        document.getElementById("nameInput").value = "";
-        document.getElementById("tempatInput").value = "";
-        document.getElementById("tanggalInput").value = "";
+        clearForm();
       })
       .catch(error => {
         console.error("Error:", error);
-        pesanEl.innerHTML = '<div class="error-message">Gagal mengirim data. Coba lagi.</div>';
+        pesanEl.innerHTML = '<div class="error-message">Gagal mengirim data.</div>';
       });
+    }
+
+    function exportKeExcel() {
+      const data = getFormData();
+      const pesanEl = document.getElementById("pesan");
+
+      if (!data.nama || !data.tempat || !data.tanggal) {
+        pesanEl.innerHTML = '<div class="error-message">Semua kolom harus diisi sebelum export.</div>';
+        return;
+      }
+
+      const worksheetData = [
+        ["Nama", "Tempat Lahir", "Tanggal Lahir"],
+        [data.nama, data.tempat, data.tanggal]
+      ];
+
+      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+
+      XLSX.writeFile(workbook, "data_input.xlsx");
+      pesanEl.innerHTML = '<div class="success-message">File Excel berhasil dibuat!</div>';
+    }
+
+    function clearForm() {
+      document.getElementById("nameInput").value = "";
+      document.getElementById("tempatInput").value = "";
+      document.getElementById("tanggalInput").value = "";
     }
   </script>
 </body>
