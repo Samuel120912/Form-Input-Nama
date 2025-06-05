@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Form Input Data</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Form Input ke Spreadsheet</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -13,8 +13,9 @@
       background-color: #f4f4f4;
     }
 
-    h2, h3 {
+    h2 {
       text-align: center;
+      margin-bottom: 20px;
     }
 
     label {
@@ -33,10 +34,10 @@
     }
 
     button {
-      margin-top: 15px;
+      margin-top: 20px;
       width: 100%;
       padding: 12px;
-      background-color: #007BFF;
+      background-color: #28a745;
       color: white;
       border: none;
       font-size: 16px;
@@ -45,99 +46,71 @@
     }
 
     button:hover {
-      background-color: #0056b3;
+      background-color: #218838;
     }
 
-    ul {
-      list-style: none;
-      padding: 0;
+    .success-message {
+      color: green;
+      text-align: center;
+      margin-top: 15px;
     }
 
-    li {
-      background: #fff;
-      margin-top: 10px;
-      padding: 10px;
-      border-left: 5px solid #007BFF;
-      border-radius: 4px;
+    .error-message {
+      color: red;
+      text-align: center;
+      margin-top: 15px;
     }
   </style>
-
-  <!-- Library untuk download Excel -->
-  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-  <h2>Form Input</h2>
+  <h2>Form Input Data</h2>
 
   <label for="nameInput">Nama:</label>
-  <input type="text" id="nameInput" placeholder="Nama lengkap">
+  <input type="text" id="nameInput" placeholder="Nama lengkap" required>
 
   <label for="tempatInput">Tempat Lahir:</label>
-  <input type="text" id="tempatInput" placeholder="Tempat lahir">
+  <input type="text" id="tempatInput" placeholder="Tempat lahir" required>
 
   <label for="tanggalInput">Tanggal Lahir:</label>
-  <input type="date" id="tanggalInput">
+  <input type="date" id="tanggalInput" required>
 
   <button onclick="simpanData()">Kirim</button>
-  <button onclick="downloadExcel()">Download Excel</button>
 
-  <h3>Data yang disimpan:</h3>
-  <ul id="daftarData"></ul>
+  <div id="pesan"></div>
 
   <script>
     function simpanData() {
       const nama = document.getElementById("nameInput").value.trim();
       const tempat = document.getElementById("tempatInput").value.trim();
       const tanggal = document.getElementById("tanggalInput").value;
+      const pesanEl = document.getElementById("pesan");
 
       if (!nama || !tempat || !tanggal) {
-        alert("Semua kolom harus diisi!");
+        pesanEl.innerHTML = '<div class="error-message">Semua kolom harus diisi.</div>';
         return;
       }
 
-      const dataBaru = { nama, tempat, tanggal };
-      let dataList = JSON.parse(localStorage.getItem("dataList") || "[]");
-      dataList.push(dataBaru);
-      localStorage.setItem("dataList", JSON.stringify(dataList));
+      const data = new URLSearchParams();
+      data.append("nama", nama);
+      data.append("tempat", tempat);
+      data.append("tanggal", tanggal);
 
-      tampilkanData();
-
-      document.getElementById("nameInput").value = "";
-      document.getElementById("tempatInput").value = "";
-      document.getElementById("tanggalInput").value = "";
-    }
-
-    function tampilkanData() {
-      const dataList = JSON.parse(localStorage.getItem("dataList") || "[]");
-      const ul = document.getElementById("daftarData");
-      ul.innerHTML = "";
-
-      dataList.forEach(item => {
-        const li = document.createElement("li");
-        li.textContent = `${item.nama} - ${item.tempat}, ${item.tanggal}`;
-        ul.appendChild(li);
+      fetch("https://script.google.com/macros/s/AKfycbzlEqUKB9akRB3Cq9Ft3KLKeczpW04Vv-7N6ot7KtAt6wjZO43nKS3LTP_tpV3e_RBrOw/exec	", {
+        method: "POST",
+        body: data
+      })
+      .then(res => res.text())
+      .then(response => {
+        pesanEl.innerHTML = '<div class="success-message">Data berhasil dikirim ke Spreadsheet!</div>';
+        document.getElementById("nameInput").value = "";
+        document.getElementById("tempatInput").value = "";
+        document.getElementById("tanggalInput").value = "";
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        pesanEl.innerHTML = '<div class="error-message">Gagal mengirim data. Coba lagi.</div>';
       });
     }
-
-    function downloadExcel() {
-      const dataList = JSON.parse(localStorage.getItem("dataList") || "[]");
-      if (dataList.length === 0) {
-        alert("Belum ada data untuk di-download.");
-        return;
-      }
-
-      const worksheetData = [
-        ["Nama", "Tempat Lahir", "Tanggal Lahir"],
-        ...dataList.map(item => [item.nama, item.tempat, item.tanggal])
-      ];
-
-      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-
-      XLSX.writeFile(workbook, "data_input.xlsx");
-    }
-
-    tampilkanData();
   </script>
 </body>
 </html>
